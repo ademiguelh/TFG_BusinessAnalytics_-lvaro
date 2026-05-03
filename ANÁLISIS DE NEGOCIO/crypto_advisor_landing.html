@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crypto-Advisor — Predice el mercado cripto antes que los demás</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     RESET + BASE
+     ========================================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FFFFFF;
+    --bg-alt: #F5F5F7;
+    --text: #1a1a1a;
+    --text-soft: #6e6e73;
+    --accent: #0071E3;
+    --accent-soft: #E3F0FC;
+    --accent-dark: #0058B0;
+    --border: #e6e6e8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 24px 60px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.06);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+    --maxw: 1200px;
+    /* Dynamic crypto color (changes via JS) */
+    --crypto-color: var(--accent);
+  }
+
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    font-family: "Sora", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 17px;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  img, svg { display: block; max-width: 100%; }
+
+  .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+  section { padding: 120px 0; position: relative; }
+  section.alt { background: var(--bg-alt); }
+
+  /* =========================================================
+     TYPOGRAPHY
+     ========================================================= */
+  h1, h2, h3, h4 { font-family: "Sora", sans-serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+  h1 { font-size: clamp(44px, 7vw, 78px); font-weight: 800; }
+  h2 { font-size: clamp(36px, 5vw, 56px); font-weight: 700; }
+  h3 { font-size: clamp(22px, 2vw, 28px); font-weight: 600; letter-spacing: -0.01em; }
+  p { color: var(--text-soft); font-size: 18px; line-height: 1.7; }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .section-title { text-align: center; margin-bottom: 16px; }
+  .section-sub { text-align: center; max-width: 680px; margin: 0 auto 80px; font-size: 20px; }
+  .accent { color: var(--accent); }
+
+  /* =========================================================
+     BUTTONS
+     ========================================================= */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 14px 28px; border-radius: var(--radius-pill);
+    font-size: 16px; font-weight: 600;
+    transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,113,227,0.3); }
+  .btn-outline { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .btn-outline:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+  .btn-sm { padding: 10px 20px; font-size: 14px; }
+
+  /* =========================================================
+     NAVBAR
+     ========================================================= */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(255,255,255,0.72);
+    transition: box-shadow 0.3s ease, background 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .navbar.scrolled {
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+  }
+  .nav-inner {
+    height: 64px; display: flex; align-items: center; justify-content: space-between;
+    max-width: var(--maxw); margin: 0 auto; padding: 0 32px;
+  }
+  .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .logo .blue { color: var(--accent); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta { display: inline-flex; }
+  .nav-toggle { display: none; }
+
+  @media (max-width: 880px) {
+    .nav-links { display: none; }
+    .nav-cta { display: none; }
+    .nav-toggle { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: var(--bg-alt); }
+  }
+
+  /* =========================================================
+     HERO
+     ========================================================= */
+  .hero {
+    min-height: 100vh; padding: 140px 0 80px;
+    display: flex; align-items: center; position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 1100px; height: 1100px; transform: translate(-50%, -55%);
+    background: radial-gradient(circle, rgba(0,113,227,0.10) 0%, rgba(0,113,227,0.04) 30%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .hero-inner { position: relative; z-index: 1; text-align: center; width: 100%; }
+  .hero h1 { margin-bottom: 28px; }
+  .hero h1 .line { display: block; opacity: 0; transform: translateY(20px); animation: hero-up 0.9s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+  .hero h1 .line:nth-child(1) { animation-delay: 0.1s; }
+  .hero h1 .line:nth-child(2) { animation-delay: 0.3s; color: var(--accent); }
+  .hero-sub {
+    max-width: 720px; margin: 0 auto 40px; font-size: 20px; color: var(--text-soft);
+    opacity: 0; transform: translateY(20px); animation: hero-up 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.5s forwards;
+  }
+  .hero-cta {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 80px;
+    opacity: 0; transform: translateY(20px); animation: hero-up 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.7s forwards;
+  }
+  @keyframes hero-up { to { opacity: 1; transform: translateY(0); } }
+
+  /* Dashboard mockup */
+  .dashboard-mockup {
+    max-width: 920px; margin: 0 auto;
+    background: #fff; border-radius: 22px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    opacity: 0; transform: translateY(40px);
+    animation: hero-up 1.1s cubic-bezier(0.2,0.8,0.2,1) 0.9s forwards;
+  }
+  .dash-bar {
+    height: 38px; background: #fafafa; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 16px; gap: 8px;
+  }
+  .dash-dot { width: 11px; height: 11px; border-radius: 50%; background: #e0e0e0; }
+  .dash-dot:nth-child(1) { background: #ff5f57; }
+  .dash-dot:nth-child(2) { background: #febc2e; }
+  .dash-dot:nth-child(3) { background: #28c840; }
+  .dash-title { font-size: 12px; color: var(--text-soft); margin-left: auto; margin-right: auto; font-weight: 500; }
+  .dash-body {
+    padding: 28px;
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 22px;
+  }
+  @media (max-width: 720px) { .dash-body { grid-template-columns: 1fr; } }
+
+  .dash-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  }
+  .dash-card h4 { font-size: 13px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .dash-price { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .dash-change { color: #00a651; font-size: 14px; font-weight: 600; margin-left: 8px; }
+  .dash-chart { width: 100%; height: 130px; margin-top: 14px; }
+
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .gauge { position: relative; width: 140px; height: 140px; margin: 8px 0; }
+  .gauge-label { font-size: 13px; color: var(--text-soft); }
+  .gauge-value { font-size: 24px; font-weight: 700; color: var(--accent); }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; grid-column: 1 / -1; }
+  .badge {
+    font-size: 12px; font-weight: 600;
+    padding: 6px 12px; border-radius: var(--radius-pill);
+    background: var(--bg-alt); color: var(--text);
+  }
+  .badge.green { background: #e6f7ed; color: #00794a; }
+  .badge.blue { background: var(--accent-soft); color: var(--accent-dark); }
+  .badge.orange { background: #fff3e6; color: #c46500; }
+
+  /* =========================================================
+     STATS
+     ========================================================= */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    text-align: center;
+  }
+  @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 36px; } }
+
+  .stat-num {
+    font-family: "Sora", sans-serif;
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 800; letter-spacing: -0.03em; color: var(--text);
+    line-height: 1;
+  }
+  .stat-label {
+    margin-top: 12px; font-size: 15px; color: var(--text-soft); font-weight: 500;
+  }
+
+  /* =========================================================
+     FOUNDATIONS / PASOS PREVIOS
+     ========================================================= */
+  .foundations-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  @media (max-width: 980px) { .foundations-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .foundations-grid { grid-template-columns: 1fr; } }
+
+  .foundation {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 36px 28px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .foundation:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .foundation-num {
+    font-size: 14px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .foundation h3 { margin-bottom: 12px; font-size: 19px; }
+  .foundation p { font-size: 15px; line-height: 1.65; }
+
+  /* =========================================================
+     ABOUT
+     ========================================================= */
+  .about-text { max-width: 800px; margin: 0 auto; }
+  .about-text p { margin-bottom: 24px; font-size: 19px; }
+  .about-text p:last-child { margin-bottom: 0; }
+
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-top: 80px;
+  }
+  @media (max-width: 880px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .feature-card {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 36px 32px; transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .feature-icon {
+    width: 48px; height: 48px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 18px;
+  }
+  .feature-card h3 { margin-bottom: 10px; }
+  .feature-card p { font-size: 16px; }
+
+  /* =========================================================
+     HOW IT WORKS
+     ========================================================= */
+  .steps {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  @media (max-width: 980px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .steps { grid-template-columns: 1fr; } }
+
+  .step {
+    background: #fff; border-radius: var(--radius);
+    padding: 36px 28px;
+    border: 1px solid var(--border);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .step-num {
+    font-size: 56px; font-weight: 800; letter-spacing: -0.04em;
+    color: var(--accent); line-height: 1; margin-bottom: 18px;
+    display: block;
+  }
+  .step-icon { margin-bottom: 18px; color: var(--accent); }
+  .step h3 { margin-bottom: 12px; font-size: 20px; }
+  .step p { font-size: 15px; line-height: 1.65; }
+
+  /* =========================================================
+     CRYPTOS
+     ========================================================= */
+  .tabs {
+    display: flex; justify-content: center; gap: 4px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 60px;
+  }
+  .tab {
+    position: relative;
+    padding: 18px 28px;
+    font-size: 17px; font-weight: 600;
+    color: var(--text-soft);
+    transition: color 0.25s;
+  }
+  .tab::after {
+    content: ""; position: absolute; left: 16px; right: 16px; bottom: -1px;
+    height: 3px; border-radius: 3px 3px 0 0;
+    background: transparent; transition: background 0.3s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); }
+  .tab.active::after { background: var(--crypto-color); }
+
+  .crypto-panel {
+    display: none;
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 48px;
+    box-shadow: var(--shadow-sm);
+  }
+  .crypto-panel.active {
+    display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: start;
+    animation: fadein 0.4s ease;
+  }
+  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 768px) {
+    .crypto-panel.active { grid-template-columns: 1fr; gap: 28px; padding: 32px 24px; text-align: center; }
+  }
+
+  .crypto-symbol {
+    width: 180px; height: 180px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; color: #fff;
+    background: var(--crypto-color);
+    letter-spacing: -0.02em;
+    margin: 0 auto;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+  }
+  .crypto-info h3 { font-size: 32px; margin-bottom: 14px; }
+  .crypto-info p { font-size: 17px; margin-bottom: 24px; }
+
+  .crypto-data {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 540px) { .crypto-data { grid-template-columns: 1fr; } }
+  .data-item {
+    background: var(--bg-alt); border-radius: var(--radius-sm);
+    padding: 16px 18px;
+  }
+  .data-label { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .data-value { font-size: 17px; font-weight: 600; color: var(--text); }
+  .data-value strong { color: var(--crypto-color); }
+
+  .finding {
+    border-left: 3px solid var(--crypto-color);
+    padding: 14px 20px;
+    background: #fafafa;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .finding strong { color: var(--crypto-color); display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* =========================================================
+     PRICING
+     ========================================================= */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+    align-items: stretch;
+  }
+  @media (max-width: 1080px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .pricing-grid { grid-template-columns: 1fr; } }
+
+  .plan {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 32px 28px; display: flex; flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .plan:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+  .plan.popular {
+    border: 2px solid var(--accent);
+    box-shadow: 0 12px 36px rgba(0,113,227,0.12);
+  }
+  .plan-flag {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    padding: 6px 14px; border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .plan h3 { font-size: 22px; margin-bottom: 6px; }
+  .plan-tagline { font-size: 14px; color: var(--text-soft); margin-bottom: 20px; }
+  .plan-pill {
+    display: inline-block;
+    background: var(--accent-soft); color: var(--accent-dark);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+    padding: 5px 12px; border-radius: var(--radius-pill);
+    margin-bottom: 16px;
+  }
+  .plan-price-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .plan-old { font-size: 16px; color: #b0b0b5; text-decoration: line-through; }
+  .plan-price { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+  .plan-period { font-size: 14px; color: var(--text-soft); margin-bottom: 24px; }
+  .plan ul { list-style: none; margin-bottom: 28px; flex: 1; }
+  .plan li {
+    font-size: 14px; color: var(--text);
+    padding: 10px 0; padding-left: 26px; position: relative;
+    border-bottom: 1px solid #f0f0f2;
+    line-height: 1.5;
+  }
+  .plan li:last-child { border-bottom: none; }
+  .plan li::before {
+    content: ""; position: absolute; left: 0; top: 14px;
+    width: 16px; height: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><circle cx='8' cy='8' r='8' fill='%230071E3'/><path d='M4.5 8.2L7 10.5l4.5-5' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-size: contain; background-repeat: no-repeat;
+  }
+  .plan .btn { width: 100%; }
+
+  /* =========================================================
+     FINAL CTA
+     ========================================================= */
+  .final-cta { background: var(--accent); color: #fff; text-align: center; }
+  .final-cta h2 { color: #fff; margin-bottom: 16px; }
+  .final-cta p { color: rgba(255,255,255,0.85); font-size: 20px; max-width: 600px; margin: 0 auto 40px; }
+  .signup-form {
+    display: flex; gap: 10px; justify-content: center; max-width: 520px; margin: 0 auto 40px;
+    flex-wrap: wrap;
+  }
+  .signup-form input {
+    flex: 1; min-width: 240px;
+    padding: 16px 20px; border: none; border-radius: var(--radius-pill);
+    font-family: inherit; font-size: 16px;
+    background: rgba(255,255,255,0.95); color: var(--text);
+    outline: none;
+  }
+  .signup-form input:focus { box-shadow: 0 0 0 3px rgba(255,255,255,0.4); }
+  .signup-form button {
+    background: #1a1a1a; color: #fff;
+    padding: 16px 28px; border-radius: var(--radius-pill);
+    font-size: 16px; font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .signup-form button:hover { background: #000; transform: translateY(-1px); }
+
+  .trust-row {
+    display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+    color: rgba(255,255,255,0.85);
+  }
+  .trust-row span { font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+
+  /* =========================================================
+     FOOTER
+     ========================================================= */
+  footer {
+    background: #1d1d1f; color: #a1a1a6;
+    padding: 80px 0 32px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 40px;
+    margin-bottom: 60px;
+  }
+  @media (max-width: 980px) { .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; } }
+  @media (max-width: 520px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .footer-logo { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+  .footer-logo .blue { color: #4a9aff; }
+  .footer-tag { font-size: 14px; color: #a1a1a6; max-width: 280px; line-height: 1.6; }
+  .footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.02em; }
+  .footer-col a { display: block; font-size: 14px; color: #a1a1a6; padding: 6px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: #fff; }
+  .footer-bottom {
+    border-top: 1px solid #2c2c2e;
+    padding-top: 28px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .footer-bottom p { color: #6e6e73; font-size: 13px; max-width: 700px; line-height: 1.6; }
+
+  /* =========================================================
+     SCROLL REVEAL
+     ========================================================= */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.2,0.8,0.2,1), transform 0.8s cubic-bezier(0.2,0.8,0.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* =========================================================
+     UTILITY
+     ========================================================= */
+  .text-center { text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ============== NAVBAR ============== -->
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#top" class="logo">Crypto<span class="blue">Advisor</span></a>
+    <nav class="nav-links">
+      <a href="#about">Sobre nosotros</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="#cryptos">Criptomonedas</a>
+      <a href="#pricing">Planes</a>
+      <a href="#contact">Contacto</a>
+    </nav>
+    <a href="#cta" class="btn btn-primary btn-sm nav-cta">Empieza gratis</a>
+    <button class="nav-toggle" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero" id="top">
+  <div class="container hero-inner">
+    <h1>
+      <span class="line">Predice el mercado cripto</span>
+      <span class="line">antes que los demás</span>
+    </h1>
+    <p class="hero-sub">
+      Monitorización del sentimiento de redes sociales en tiempo real. Señales predictivas
+      basadas en inteligencia artificial y análisis de datos de más de 22.000 publicaciones
+      de cripto-influencers.
+    </p>
+    <div class="hero-cta">
+      <a href="#how" class="btn btn-primary">Descubre cómo funciona</a>
+      <a href="#pricing" class="btn btn-outline">Ver planes</a>
+    </div>
+
+    <!-- Dashboard mockup -->
+    <div class="dashboard-mockup">
+      <div class="dash-bar">
+        <span class="dash-dot"></span><span class="dash-dot"></span><span class="dash-dot"></span>
+        <span class="dash-title">crypto-advisor.app · dashboard</span>
+      </div>
+      <div class="dash-body">
+        <div class="dash-card">
+          <h4>Bitcoin · BTC/USD</h4>
+          <div>
+            <span class="dash-price">$67.428</span>
+            <span class="dash-change">+2,4%</span>
+          </div>
+          <svg class="dash-chart" viewBox="0 0 400 130" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#0071E3" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#0071E3" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,90 C40,80 70,95 100,75 C140,55 170,80 210,55 C250,32 280,60 320,40 C350,28 380,35 400,18"
+                  fill="none" stroke="#0071E3" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M0,90 C40,80 70,95 100,75 C140,55 170,80 210,55 C250,32 280,60 320,40 C350,28 380,35 400,18 L400,130 L0,130 Z"
+                  fill="url(#lineGrad)"/>
+          </svg>
+        </div>
+
+        <div class="dash-card gauge-wrap">
+          <h4 style="text-align:center;">Sentimiento agregado</h4>
+          <div class="gauge">
+            <svg viewBox="0 0 120 120" width="140" height="140">
+              <circle cx="60" cy="60" r="50" stroke="#eef0f3" stroke-width="10" fill="none"/>
+              <circle cx="60" cy="60" r="50" stroke="#0071E3" stroke-width="10" fill="none"
+                      stroke-linecap="round"
+                      stroke-dasharray="314" stroke-dashoffset="85"
+                      transform="rotate(-90 60 60)"/>
+              <text x="60" y="58" text-anchor="middle" font-family="Sora" font-weight="700" font-size="22" fill="#0071E3">73%</text>
+              <text x="60" y="78" text-anchor="middle" font-family="Sora" font-size="11" fill="#6e6e73">Bullish</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="badges">
+          <span class="badge orange">BTC +2,4%</span>
+          <span class="badge green">Sentimiento: Positivo</span>
+          <span class="badge blue">● Alerta activa</span>
+          <span class="badge">22.606 tuits analizados</span>
+          <span class="badge">Última act.: hace 4 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOUNDATIONS / PASOS PREVIOS ============== -->
+<section class="alt" id="foundations">
+  <div class="container">
+    <div class="reveal text-center">
+      <span class="eyebrow">Pasos previos</span>
+      <h2 class="section-title">La investigación que sustenta la plataforma</h2>
+      <p class="section-sub">Antes de construir el producto, dedicamos meses a validar científicamente que el sentimiento en redes sociales podía anticipar el movimiento de los mercados cripto.</p>
+    </div>
+
+    <div class="foundations-grid">
+      <div class="foundation reveal">
+        <div class="foundation-num">01</div>
+        <h3>Recogida de datos históricos</h3>
+        <p>Más de 22.000 publicaciones de cripto-influencers recogidas durante un año completo, junto con los precios diarios de Bitcoin, Ethereum, Solana y XRP, para construir una base de datos sólida sobre la que entrenar los modelos.</p>
+      </div>
+      <div class="foundation reveal">
+        <div class="foundation-num">02</div>
+        <h3>Construcción del motor de sentimiento</h3>
+        <p>Desarrollo de un diccionario propio con más de 100 términos del ecosistema cripto y un pipeline de NLP que asigna a cada publicación una puntuación entre -1 (Bearish) y +1 (Bullish) con alta precisión.</p>
+      </div>
+      <div class="foundation reveal">
+        <div class="foundation-num">03</div>
+        <h3>Modelado predictivo y validación</h3>
+        <p>Comparación de modelos ARIMA, ARIMAX, Random Forest y regresión lineal sobre los cuatro activos. Resultado: correlación estadísticamente significativa (p&lt;0,05) entre sentimiento y precio de Bitcoin.</p>
+      </div>
+      <div class="foundation reveal">
+        <div class="foundation-num">04</div>
+        <h3>Producto: scraping en tiempo real</h3>
+        <p>Con la metodología validada, Crypto-Advisor aplica este mismo enfoque sobre publicaciones recogidas en tiempo real mediante scraping continuo, llevando la investigación al inversor minorista.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ABOUT ============== -->
+<section id="about">
+  <div class="container">
+    <div class="reveal text-center">
+      <span class="eyebrow">Sobre nosotros</span>
+      <h2 class="section-title">Una plataforma nacida de la investigación</h2>
+    </div>
+    <div class="about-text reveal" style="margin-top: 40px;">
+      <p>
+        Crypto-Advisor nace como resultado de un proyecto de investigación universitario en la
+        Universidad Francisco de Vitoria (Madrid), donde se analizó la influencia del sentimiento
+        de los tuits de cripto-influencers sobre la evolución del precio de cuatro criptomonedas:
+        Bitcoin, Ethereum, Solana y XRP. Tras analizar más de 22.000 publicaciones y construir
+        modelos predictivos que combinan análisis de sentimiento con series temporales, descubrimos
+        que el sentimiento expresado en redes sociales tiene una correlación estadísticamente
+        significativa con el precio de Bitcoin y que los picos de actividad en redes sociales
+        coinciden con los mayores movimientos de mercado.
+      </p>
+      <p>
+        Nuestra misión es democratizar el acceso a esta información. Hoy, los grandes fondos de
+        inversión tienen equipos enteros dedicados a monitorizar redes sociales y procesar señales
+        de sentimiento. El inversor minorista, que es el más expuesto a la influencia de los
+        cripto-influencers, no tiene herramientas accesibles para hacerlo. Crypto-Advisor quiere
+        cerrar esa brecha.
+      </p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">🎯</div>
+        <h3>Nuestra misión</h3>
+        <p>Democratizar el análisis de sentimiento cripto para el inversor minorista.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">💡</div>
+        <h3>Por qué nace</h3>
+        <p>El 62% de la conversación cripto se concentra en Bitcoin. Los influencers moldean la percepción del mercado y los inversores necesitan herramientas para procesarlo objetivamente.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔬</div>
+        <h3>Base científica</h3>
+        <p>Respaldado por un análisis de más de 22.000 tuits, modelos ARIMA, Random Forest y regresión lineal, y correlaciones estadísticamente significativas (p&lt;0,05).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section class="alt" id="how">
+  <div class="container">
+    <div class="reveal text-center">
+      <span class="eyebrow">Proceso</span>
+      <h2 class="section-title">Cómo funciona</h2>
+      <p class="section-sub">De los datos en bruto a la señal accionable, en cuatro pasos.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <span class="step-num">01</span>
+        <div class="step-icon">
+          <!-- radar -->
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><line x1="12" y1="12" x2="20" y2="6"/>
+          </svg>
+        </div>
+        <h3>Scraping en tiempo real</h3>
+        <p>Monitorizamos continuamente X (Twitter), portales de noticias y otras redes sociales para capturar publicaciones de cripto-influencers con alto alcance (más de 500 likes). Nuestro sistema extrae el contenido, la fecha, las métricas de engagement y el autor de cada publicación.</p>
+      </div>
+
+      <div class="step reveal">
+        <span class="step-num">02</span>
+        <div class="step-icon">
+          <!-- brain -->
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.5 4.5a2.5 2.5 0 0 1 5 0v15a2.5 2.5 0 0 1-5 0"/>
+            <path d="M9.5 4.5A2.5 2.5 0 0 0 5 7c-1.5 1-1.5 3 0 4.5-1 1-1 3 .5 4 0 1.5 1.5 2.5 4 2.5"/>
+            <path d="M14.5 4.5A2.5 2.5 0 0 1 19 7c1.5 1 1.5 3 0 4.5 1 1 1 3-.5 4 0 1.5-1.5 2.5-4 2.5"/>
+          </svg>
+        </div>
+        <h3>Análisis de sentimiento</h3>
+        <p>Cada publicación pasa por nuestro motor de NLP (procesamiento del lenguaje natural), que asigna una puntuación de sentimiento entre -1 (Bearish) y +1 (Bullish). Utilizamos un diccionario enriquecido con más de 100 términos propios del ecosistema cripto para maximizar la precisión.</p>
+      </div>
+
+      <div class="step reveal">
+        <span class="step-num">03</span>
+        <div class="step-icon">
+          <!-- chart -->
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="20" x2="21" y2="20"/><line x1="3" y1="20" x2="3" y2="4"/>
+            <polyline points="6,15 10,11 13,14 18,7"/>
+            <circle cx="18" cy="7" r="1.4" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>Integración con datos de mercado</h3>
+        <p>Cruzamos el sentimiento diario con los precios históricos de cada criptomoneda y calculamos variables derivadas: retardos de sentimiento, medias móviles y log-retornos. Esta integración permite que nuestros modelos aprendan la relación entre lo que se dice y lo que ocurre en el mercado.</p>
+      </div>
+
+      <div class="step reveal">
+        <span class="step-num">04</span>
+        <div class="step-icon">
+          <!-- bell -->
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.5 2h15z"/>
+            <path d="M10 20a2 2 0 0 0 4 0"/>
+          </svg>
+        </div>
+        <h3>Señales y alertas</h3>
+        <p>Nuestros modelos predictivos generan señales accionables: alertas de picos de sentimiento, cambios bruscos de tono, y predicciones de tendencia a corto plazo. Todo disponible en tu dashboard personalizado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CRYPTOS ============== -->
+<section id="cryptos">
+  <div class="container">
+    <div class="reveal text-center">
+      <span class="eyebrow">Activos monitorizados</span>
+      <h2 class="section-title">Las criptomonedas que monitorizamos</h2>
+      <p class="section-sub">Selecciona un activo para conocer sus características y nuestros hallazgos.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="btc" data-color="#F7931A">Bitcoin</button>
+        <button class="tab" data-tab="eth" data-color="#627EEA">Ethereum</button>
+        <button class="tab" data-tab="sol" data-color="#9945FF">Solana</button>
+        <button class="tab" data-tab="xrp" data-color="#23292F">XRP</button>
+      </div>
+
+      <!-- Bitcoin -->
+      <div class="crypto-panel active" data-panel="btc">
+        <div><div class="crypto-symbol">BTC</div></div>
+        <div class="crypto-info">
+          <h3>Bitcoin <span class="accent" style="color:var(--crypto-color);">·</span> BTC</h3>
+          <p>La criptomoneda original y la más capitalizada del mercado. Con más de 14.000 tuits analizados, Bitcoin es el activo con mayor cobertura mediática en nuestro sistema.</p>
+          <div class="crypto-data">
+            <div class="data-item"><div class="data-label">Volumen de tuits</div><div class="data-value">Media de <strong>35</strong> tuits/día</div></div>
+            <div class="data-item"><div class="data-label">Sentimiento medio</div><div class="data-value"><strong>0,15</strong> (Neutro-Bullish)</div></div>
+            <div class="data-item"><div class="data-label">Correlación sent.-precio</div><div class="data-value"><strong>0,138*</strong> (significativa)</div></div>
+            <div class="data-item"><div class="data-label">Crecimiento del periodo</div><div class="data-value"><strong>+136%</strong></div></div>
+          </div>
+          <div class="finding">
+            <strong>Hallazgo clave</strong>
+            Único activo con correlaciones estadísticamente significativas entre sentimiento y precio en todos los desfases analizados.
+          </div>
+        </div>
+      </div>
+
+      <!-- Ethereum -->
+      <div class="crypto-panel" data-panel="eth">
+        <div><div class="crypto-symbol">ETH</div></div>
+        <div class="crypto-info">
+          <h3>Ethereum <span style="color:var(--crypto-color);">·</span> ETH</h3>
+          <p>La segunda criptomoneda más importante, líder en contratos inteligentes y DeFi. Con 2.678 tuits analizados y el sentimiento medio más alto de los cuatro activos.</p>
+          <div class="crypto-data">
+            <div class="data-item"><div class="data-label">Volumen de tuits</div><div class="data-value">Media de <strong>5</strong> tuits/día</div></div>
+            <div class="data-item"><div class="data-label">Sentimiento medio</div><div class="data-value"><strong>0,28</strong> (Bullish)</div></div>
+            <div class="data-item"><div class="data-label">Correlación sent.-precio</div><div class="data-value"><strong>0,013</strong> (no significativa)</div></div>
+            <div class="data-item"><div class="data-label">Crecimiento del periodo</div><div class="data-value"><strong>+300%</strong></div></div>
+          </div>
+          <div class="finding">
+            <strong>Hallazgo clave</strong>
+            El sentimiento del día anterior (sent_lag1) es la variable más importante en el modelo Random Forest, sugiriendo relaciones no lineales entre sentimiento y precio.
+          </div>
+        </div>
+      </div>
+
+      <!-- Solana -->
+      <div class="crypto-panel" data-panel="sol">
+        <div><div class="crypto-symbol">SOL</div></div>
+        <div class="crypto-info">
+          <h3>Solana <span style="color:var(--crypto-color);">·</span> SOL</h3>
+          <p>Una de las blockchains más rápidas del mercado, con un crecimiento explosivo. 2.911 tuits analizados y la mayor volatilidad relativa de los cuatro activos.</p>
+          <div class="crypto-data">
+            <div class="data-item"><div class="data-label">Volumen de tuits</div><div class="data-value">Media de <strong>5</strong> tuits/día</div></div>
+            <div class="data-item"><div class="data-label">Sentimiento medio</div><div class="data-value"><strong>0,25</strong> (Bullish)</div></div>
+            <div class="data-item"><div class="data-label">Correlación sent.-precio</div><div class="data-value"><strong>0,066</strong> (no significativa)</div></div>
+            <div class="data-item"><div class="data-label">Crecimiento del periodo</div><div class="data-value"><strong>+1.000%</strong></div></div>
+          </div>
+          <div class="finding">
+            <strong>Hallazgo clave</strong>
+            Los movimientos de precio responden más a dinámicas internas del mercado que a la influencia del sentimiento en redes sociales.
+          </div>
+        </div>
+      </div>
+
+      <!-- XRP -->
+      <div class="crypto-panel" data-panel="xrp">
+        <div><div class="crypto-symbol">XRP</div></div>
+        <div class="crypto-info">
+          <h3>XRP <span style="color:var(--crypto-color);">·</span> XRP</h3>
+          <p>Criptomoneda orientada a pagos internacionales, con un comportamiento atípico respecto al resto. 3.003 tuits analizados.</p>
+          <div class="crypto-data">
+            <div class="data-item"><div class="data-label">Volumen de tuits</div><div class="data-value">Media de <strong>5–10</strong> tuits/día</div></div>
+            <div class="data-item"><div class="data-label">Sentimiento medio</div><div class="data-value"><strong>0,21</strong> (Neutro-Bullish)</div></div>
+            <div class="data-item"><div class="data-label">Correlación sent.-precio</div><div class="data-value"><strong>0,052</strong> (no significativa)</div></div>
+            <div class="data-item"><div class="data-label">Comportamiento</div><div class="data-value"><strong>Lateral</strong> con picos puntuales</div></div>
+          </div>
+          <div class="finding">
+            <strong>Hallazgo clave</strong>
+            Único activo donde todos los modelos obtuvieron R² positivos. La media móvil del sentimiento a 7 días es la variable más importante para predecir su precio.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING ============== -->
+<section class="alt" id="pricing">
+  <div class="container">
+    <div class="reveal text-center">
+      <span class="eyebrow">Planes y precios</span>
+      <h2 class="section-title">Elige tu plan</h2>
+      <p class="section-sub">Todos los planes incluyen 7 días de prueba gratuita. Sin compromiso.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Basic -->
+      <div class="plan reveal">
+        <h3>Basic</h3>
+        <div class="plan-tagline">Para empezar a explorar.</div>
+        <span class="plan-pill">Early Adopter −20%</span>
+        <div class="plan-price-row">
+          <span class="plan-old">9,99€</span>
+          <span class="plan-price">7,99€</span>
+        </div>
+        <div class="plan-period">por mes</div>
+        <ul>
+          <li>Seguimiento de Bitcoin únicamente</li>
+          <li>Fuente de datos: X (Twitter)</li>
+          <li>Refresco de datos cada 8 horas</li>
+          <li>Dashboard básico</li>
+          <li>Alertas por email</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline">Empezar con Basic</a>
+      </div>
+
+      <!-- Advanced (popular) -->
+      <div class="plan popular reveal">
+        <span class="plan-flag">Más popular</span>
+        <h3>Advanced</h3>
+        <div class="plan-tagline">Para inversores activos.</div>
+        <span class="plan-pill">Early Adopter −20%</span>
+        <div class="plan-price-row">
+          <span class="plan-old">24,99€</span>
+          <span class="plan-price">19,99€</span>
+        </div>
+        <div class="plan-period">por mes</div>
+        <ul>
+          <li>Seguimiento de Bitcoin, Ethereum, Solana y XRP</li>
+          <li>Fuentes de datos: X + noticias de actualidad</li>
+          <li>Refresco de datos cada 4 horas</li>
+          <li>Dashboard completo</li>
+          <li>Alertas por email y push</li>
+          <li>Informes semanales</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary">Empezar con Advanced</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan reveal">
+        <h3>PRO</h3>
+        <div class="plan-tagline">Para profesionales y traders.</div>
+        <span class="plan-pill">Early Adopter −20%</span>
+        <div class="plan-price-row">
+          <span class="plan-old">99,99€</span>
+          <span class="plan-price">79,99€</span>
+        </div>
+        <div class="plan-period">por mes</div>
+        <ul>
+          <li>Cualquier cripto con market cap &gt; 50.000M $</li>
+          <li>Fuentes: X + noticias + otras redes sociales</li>
+          <li>Refresco de datos cada 2 horas</li>
+          <li>Dashboard avanzado con exportación</li>
+          <li>Alertas personalizables</li>
+          <li>Informes diarios</li>
+          <li>API de acceso</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline">Empezar con PRO</a>
+      </div>
+
+      <!-- PRO+ -->
+      <div class="plan reveal">
+        <h3>PRO+</h3>
+        <div class="plan-tagline">Para fondos e instituciones.</div>
+        <span class="plan-pill">Early Adopter −20%</span>
+        <div class="plan-price-row">
+          <span class="plan-old">199,99€</span>
+          <span class="plan-price">149,99€</span>
+        </div>
+        <div class="plan-period">por mes</div>
+        <ul>
+          <li>Todo lo del Plan PRO</li>
+          <li>Refresco de datos cada 10 minutos</li>
+          <li>Modelos predictivos avanzados</li>
+          <li>Soporte prioritario 24/7</li>
+          <li>Consultoría mensual personalizada</li>
+          <li>Acceso anticipado a nuevas funcionalidades</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline">Empezar con PRO+</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="final-cta" id="cta">
+  <div class="container reveal">
+    <h2>Empieza a tomar decisiones informadas</h2>
+    <p>7 días gratis. Sin tarjeta de crédito. Cancela cuando quieras.</p>
+    <form class="signup-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('button').textContent='✓ Cuenta creada';">
+      <input type="email" placeholder="tu@email.com" required>
+      <button type="submit">Crear cuenta gratis</button>
+    </form>
+    <div class="trust-row">
+      <span>🔒 Seguridad SSL</span>
+      <span>🛡️ Datos encriptados</span>
+      <span>✓ GDPR Compliant</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Crypto<span class="blue">Advisor</span></div>
+        <p class="footer-tag">Señales de sentimiento cripto basadas en inteligencia artificial. Para el inversor minorista que quiere decidir con datos.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Producto</h4>
+        <a href="#how">Cómo funciona</a>
+        <a href="#cryptos">Criptomonedas</a>
+        <a href="#pricing">Planes</a>
+        <a href="#cta">Prueba gratuita</a>
+      </div>
+      <div class="footer-col">
+        <h4>Recursos</h4>
+        <a href="#">Blog</a>
+        <a href="#">Documentación</a>
+        <a href="#">API</a>
+        <a href="#">Estado del sistema</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Términos de uso</a>
+        <a href="#">Política de privacidad</a>
+        <a href="#">Cookies</a>
+        <a href="#">Aviso legal</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <a href="mailto:hola@crypto-advisor.app">hola@crypto-advisor.app</a>
+        <a href="#">Soporte</a>
+        <a href="#">Prensa</a>
+        <a href="#">Universidad Francisco de Vitoria</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Crypto-Advisor. Proyecto académico — Universidad Francisco de Vitoria.</span>
+      <p>Crypto-Advisor no ofrece asesoramiento financiero. Las señales generadas son de carácter informativo.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ===== Navbar shadow on scroll ===== */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 8) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+
+  /* ===== Scroll reveal ===== */
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => revealObs.observe(el));
+
+  /* ===== Stat counters ===== */
+  const counters = document.querySelectorAll('.stat-num');
+  const formatNum = (n, decimals) => {
+    if (decimals > 0) return n.toFixed(decimals).replace('.', ',');
+    return Math.floor(n).toLocaleString('es-ES');
+  };
+  const animateCounter = (el) => {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals || '0', 10);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1800;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const value = target * eased;
+      el.textContent = formatNum(value, decimals) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = formatNum(target, decimals) + suffix;
+    };
+    requestAnimationFrame(tick);
+  };
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(e.target);
+        counterObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => counterObs.observe(el));
+
+  /* ===== Crypto tabs ===== */
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.crypto-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.tab;
+      const color = tab.dataset.color;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      panels.forEach(p => p.classList.remove('active'));
+      const target = document.querySelector(`.crypto-panel[data-panel="${id}"]`);
+      if (target) target.classList.add('active');
+
+      document.documentElement.style.setProperty('--crypto-color', color);
+    });
+  });
+
+  /* ===== Parallax sutil en el glow del hero ===== */
+  const hero = document.querySelector('.hero');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < 800 && hero) {
+      hero.style.setProperty('--parallax', `${y * 0.15}px`);
+      hero.style.backgroundPosition = `center ${y * 0.15}px`;
+    }
+  });
+</script>
+
+</body>
+</html>
